@@ -80,6 +80,9 @@ function enable_sprinkler(valve_index, run_time_ms)
   end
 end
 
+page_head_200 = [[HTTP/1.0 200 OK\r\nServer: NodeMCU on ESP8266\r\nContent-Type: text/html\r\n\r\n<!DOCTYPE HTML>
+<html><head><meta name = "viewport" content = "width=device-width">
+</head><body>]]
 
 srv = nil
 function setup_server()
@@ -91,7 +94,7 @@ function setup_server()
         response = {"HTTP/1.0 404 NOT FOUND\r\nServer: NodeMCU on ESP8266\r\nContent-Type: text/html\r\n\r\n"} 
         response[#response + 1] = "<h1>404 Not Found</h1><p><a href='/'>Home</a></p>"
       elseif path == "/" then
-        response = {"HTTP/1.0 200 OK\r\nServer: NodeMCU on ESP8266\r\nContent-Type: text/html\r\n\r\n"}
+        response = {page_head_200}
         response[#response + 1] = "<h1>Sprinkler Control</h1>"
         response[#response + 1] = "<p>Use /<index>/<min> to turn on a sprinkler for a period of seconds. eg GET /3/15 turns on valve 3 for 15 minutes</p>"
         if active_sprinkler ~= nil then
@@ -106,7 +109,7 @@ function setup_server()
 
       elseif path == "/off" then
         turn_all_off()
-        response = {"HTTP/1.0 200 OK\r\nServer: NodeMCU on ESP8266\r\nContent-Type: text/html\r\n\r\n"}
+        response = {page_head_200}
         response[#response + 1] = "<h1>Sprinkler Control</h1>"
         response[#response + 1] = "<p>All Off</p>"
         response[#response + 1] = "<p><a href='/'>Home</a></p>"
@@ -114,7 +117,7 @@ function setup_server()
         _, _, valve, min = string.find(path, "/(%d+)/(%d+)")
         if(valve ~= nil) then
           enable_sprinkler(tonumber(valve), tonumber(min) * 1000)
-          response = {"HTTP/1.0 200 OK\r\nServer: NodeMCU on ESP8266\r\nContent-Type: text/html\r\n\r\n"}
+          response = {page_head_200}
           response[#response + 1] = "<h1>Enabled Valve "
           response[#response + 1] = valve
           response[#response + 1] = " for "
